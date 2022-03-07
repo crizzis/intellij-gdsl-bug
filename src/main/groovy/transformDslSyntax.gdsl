@@ -1,0 +1,18 @@
+import com.github.javaparser.ast.Node
+import org.reflections.Reflections
+
+def ctx = context(
+        ctype: 'groovy.util.ObjectGraphBuilder',
+        paths: ['src/main/groovy/io/github/crizzis/civet/generator/transforms/scripts/.*'],
+        filetypes: ["groovy"]
+)
+
+Map<String, Class> candidateClasses = new Reflections(Node.packageName).getSubTypesOf(Node)
+        .collectEntries { Class type -> [(type.simpleName.uncapitalize()): type] }
+
+contributor(ctx) {
+    candidateClasses.each { String methodName, Class type ->
+        method name: methodName, params: [props: "java.util.Map", closure: "groovy.lang.Closure"], type: type.name
+    }
+}
+
